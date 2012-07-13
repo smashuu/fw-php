@@ -1,0 +1,224 @@
+.TH "Watchperson" 3 "Thu Jul 12 2012" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Watchperson \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fB__construct\fP ($dbhost, $dbuser, $dbpass, $database, $loginPage='/', $homepage='/')"
+.br
+.ti -1c
+.RI "\fBpbkdf2_hash\fP ($password, $salt, $iterations=1025, $key_length=256)"
+.br
+.ti -1c
+.RI "\fBcreateUserTable\fP ()"
+.br
+.ti -1c
+.RI "\fBcreateUser\fP ($username, $password, $level=null)"
+.br
+.ti -1c
+.RI "\fBlogin\fP ($username, $password, $path='', $remember=false)"
+.br
+.ti -1c
+.RI "\fBlogout\fP ($path='')"
+.br
+.ti -1c
+.RI "\fBstartSession\fP ($requiredLevel=0, $path='')"
+.br
+.ti -1c
+.RI "\fBendSession\fP ()"
+.br
+.ti -1c
+.RI "\fBgetLevel\fP ()"
+.br
+.in -1c
+.SS "Data Fields"
+
+.PP
+.RI "\fB\fP"
+.br
+
+.in +1c
+.in +1c
+.ti -1c
+.RI "const \fBLVL_NONE\fP = 0"
+.br
+.ti -1c
+.RI "const \fBLVL_USER\fP = 1"
+.br
+.ti -1c
+.RI "const \fBLVL_ADMIN\fP = 2"
+.br
+.ti -1c
+.RI "const \fBLVL_OWNER\fP = 3"
+.br
+.in -1c
+.in -1c
+.PP
+.RI "\fB\fP"
+.br
+
+.in +1c
+.in +1c
+.ti -1c
+.RI "const \fBLOGIN_SUCCESS\fP = 0"
+.br
+.ti -1c
+.RI "const \fBLOGIN_REQUIRED\fP = 1"
+.br
+.ti -1c
+.RI "const \fBLOGIN_EXPIRED\fP = 2"
+.br
+.ti -1c
+.RI "const \fBLOGIN_UNAUTHORIZED\fP = 3"
+.br
+.ti -1c
+.RI "const \fBLOGIN_FAILED\fP = 4"
+.br
+.in -1c
+.in -1c
+.SH "Detailed Description"
+.PP 
+This class provides simple tools for handling login and authentication\&.
+.SH "Usage Example"
+.PP
+require_once '\fBWatchperson\&.class\&.php\fP';
+.br
+ $sentry = new \fBWatchperson\fP('localhost', 'login', '*****', 'database', '/login\&.php', '/');
+.br
+ $sentry->\fBstartSession()\fP;
+.PP
+if ($_POST['logout']) $sentry->\fBlogout()\fP; elseif (!empty($_POST['username']) && !empty($_POST['password'])) $sentry->login($_POST['username'], $_POST['password'], $_SERVER['REQUEST_URI']);
+.PP
+if ($sentry->\fBgetLevel()\fP) echo 'level: ' \&. $sentry->\fBgetLevel()\fP \&. '<hr>'; 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "__construct ($dbhost, $dbuser, $dbpass, $database, $loginPage = \fC'/'\fP, $homepage = \fC'/'\fP)"
+Creates a new instance of a Watchman object\&.
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$dbhost\fP MySQL hostname 
+.br
+\fI$dbuser\fP MySQL username 
+.br
+\fI$dbpass\fP MySQL password 
+.br
+\fI$database\fP MySQL database name 
+.br
+\fI$loginPage\fP (optional) The path to redirect to when login is required\&. Defaults to the web root\&. 
+.br
+\fI$homepage\fP (optional) The path to the site's main page\&. Defaults to the web root\&. 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "createUser ($username, $password, $level = \fCnull\fP)"
+Creates a user with the specified name, password, and optionally, access level
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$username\fP The username 
+.br
+\fI$password\fP The raw password string 
+.br
+\fI$level\fP (optional) The user's access level, as defined at the top of the class\&. Defaults to the unprivileged LVL_USER 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE if the insert succeeded, otherwise FALSE 
+.RE
+.PP
+
+.SS "createUserTable ()"
+Creates the users table
+.PP
+\fBReturns:\fP
+.RS 4
+TRUE if the table creation succeeded, otherwise FALSE 
+.RE
+.PP
+
+.SS "endSession ()"
+Ends a session and logs the user out, if logged in 
+.SS "getLevel ()"
+Returns the access level of the user\&.
+.PP
+\fBReturns:\fP
+.RS 4
+0 if no user is logged in, otherwise the user level as defined at the top of the class 
+.RE
+.PP
+
+.SS "login ($username, $password, $path = \fC''\fP, $remember = \fCfalse\fP)"
+Attempt to log a user in
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$username\fP The username 
+.br
+\fI$password\fP The raw password string 
+.br
+\fI$path\fP (optional) The path to redirect to, on successful login\&. Default value is the homepage defined on instanciation\&. 
+.br
+\fI$remember\fP (optional) Currently unimplemented 
+.RE
+.PP
+
+.SS "logout ($path = \fC''\fP)"
+Creates a user with the specified name, password, and optionally, access level
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$path\fP (optional) The path to redirect to on logout\&. Default value is the homepage defined on instanciation\&. 
+.RE
+.PP
+
+.SS "pbkdf2_hash ($password, $salt, $iterations = \fC1025\fP, $key_length = \fC256\fP)"
+Runs a key (password) through the PBKDF2 algorithm and returns it as a hex string
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$password\fP The password 
+.br
+\fI$salt\fP A salt that is unique to the password\&. 
+.br
+\fI$iterations\fP (optional) Iteration count\&. Higher is better, but slower\&. Recommended: At least 1024 
+.br
+\fI$key_length\fP (optional) The length of the derived key 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+A $key_length sized hex string derived from the password and salt 
+.RE
+.PP
+
+.SS "startSession ($requiredLevel = \fC0\fP, $path = \fC''\fP)"
+Starts a session for a page\&. Optionally, setting the required level Call this on page before any output, as it may send HTTP headers
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$requiredLevel\fP (optional) Optionally, the previous path the user was on; useful for preserving the page when logging in 
+.br
+\fI$path\fP (optional) The path to use for redirects 
+.RE
+.PP
+
+.SH "Field Documentation"
+.PP 
+.SS "const LOGIN_SUCCESS = 0"
+Error codes, as integers 
+.SS "const LVL_NONE = 0"
+User access levels, as integers, so you can easily test if a user's level < the required level 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

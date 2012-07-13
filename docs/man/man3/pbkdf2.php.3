@@ -1,0 +1,41 @@
+.TH "/Library/WebServer/Documents/fw-php/pbkdf2.php" 3 "Thu Jul 12 2012" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+/Library/WebServer/Documents/fw-php/pbkdf2.php \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBpbkdf2\fP ($password, $salt, $iterations, $keyLength, $algo= 'sha256')"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+PBKDF2 Implementation (described in RFC 2898)
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$password\fP Password 
+.br
+\fI$salt\fP Salt 
+.br
+\fI$iterations\fP iteration count (use 1000 or higher) 
+.br
+\fI$keyLength\fP derived key length 
+.br
+\fI$algo\fP (optional) hash algorithm, defaults to 'sha256'
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+Derived key 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.

@@ -1,0 +1,205 @@
+.TH "Puploads" 3 "Thu Jul 12 2012" "My Project" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Puploads \- 
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fB__construct\fP ()"
+.br
+.ti -1c
+.RI "\fBfileCount\fP ($name)"
+.br
+.ti -1c
+.RI "\fBfileList\fP ()"
+.br
+.ti -1c
+.RI "\fBgetAll\fP ()"
+.br
+.ti -1c
+.RI "\fBgetAllForName\fP ($name)"
+.br
+.ti -1c
+.RI "\fBgetAllForUpload\fP ($name, $number=0)"
+.br
+.ti -1c
+.RI "\fBgetFieldForUpload\fP ($field, $name, $number=0)"
+.br
+.ti -1c
+.RI "\fBerror\fP ($name, $number=0)"
+.br
+.ti -1c
+.RI "\fBmove\fP ($destinationDir, $destinationFile, $name, $number=0)"
+.br
+.ti -1c
+.RI "\fBhash\fP ($algo, $name, $number=0)"
+.br
+.ti -1c
+.RI "\fBcleanName\fP ($name, $number)"
+.br
+.in -1c
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "__construct ()"
+Creates a new instance of a \fBPuploads\fP object 
+.SH "Member Function Documentation"
+.PP 
+.SS "cleanName ($name, $number)"
+Returns a 'clean' filename (characters that aren't alphanumeric, periods, or dashes are replaced with underscores) for a single uploaded file
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$name\fP Upload field name 
+.br
+\fI$number\fP (optional) The upload number, if more than one file was uploaded under the same field name 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The cleaned filename 
+.RE
+.PP
+
+.SS "error ($name, $number = \fC0\fP)"
+Gets the error, if any, for a single upload
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$name\fP Upload field name 
+.br
+\fI$number\fP (optional) The upload number, if more than one file was uploaded under the same field name 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The error code, or 0 if no error occurred 
+.RE
+.PP
+
+.SS "fileCount ($name)"
+Gets a count of uploads with the given field name
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$name\fP Upload field name to count 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The number of files, or 0 if nothing was uploaded under that name 
+.RE
+.PP
+
+.SS "fileList ()"
+Gets an array of counts of uploaded files
+.PP
+\fBReturns:\fP
+.RS 4
+An array of upload fields in the format: [ fieldName => fileCount ] 
+.RE
+.PP
+
+.SS "getAll ()"
+Gets an array of parameters of all uploads
+.PP
+\fBReturns:\fP
+.RS 4
+An array in the format: [ fieldName => [ count => [name,type,size,tmp_name,error] ] ] 
+.RE
+.PP
+
+.SS "getAllForName ($name)"
+Gets an array of parameters of uploads with the given field name
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$name\fP Upload field name 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+An array in the format: [ count => [name,type,size,tmp_name,error] ] 
+.RE
+.PP
+
+.SS "getAllForUpload ($name, $number = \fC0\fP)"
+Gets an array of parameters of a single upload with the given field name
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$name\fP Upload field name 
+.br
+\fI$number\fP (optional) The upload number, if more than one file was uploaded under the same field name 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+An array in the format: [name,type,size,tmp_name,error] 
+.RE
+.PP
+
+.SS "getFieldForUpload ($field, $name, $number = \fC0\fP)"
+Gets one parameter of a single upload with the given field name
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$field\fP Upload parameter to return 
+.br
+\fI$name\fP Upload field name 
+.br
+\fI$number\fP (optional) The upload number, if more than one file was uploaded under the same field name 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The parameter's string or integer 
+.RE
+.PP
+
+.SS "hash ($algo, $name, $number = \fC0\fP)"
+Calculates the hash of a single uploaded file
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$algo\fP The algorithm to use (such as 'MD5') 
+.br
+\fI$name\fP Upload field name 
+.br
+\fI$number\fP (optional) The upload number, if more than one file was uploaded under the same field name 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The parameter's string or integer 
+.RE
+.PP
+
+.SS "move ($destinationDir, $destinationFile, $name, $number = \fC0\fP)"
+Moves an uploaded file to the specified destination
+.PP
+\fBParameters:\fP
+.RS 4
+\fI$destinationDir\fP The destination directory 
+.br
+\fI$destinationFile\fP The destination filename -- if using the original filename be sure to sanitize it with \fBcleanName()\fP 
+.br
+\fI$name\fP Upload field name 
+.br
+\fI$number\fP (optional) The upload number, if more than one file was uploaded under the same field name 
+.RE
+.PP
+\fBReturns:\fP
+.RS 4
+The parameter's string or integer 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for My Project from the source code\&.
