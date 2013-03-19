@@ -4,18 +4,20 @@ class Flitter {
 	private $ip;
 	private $url;
 	private $secret;
+	private $algo;
 	
-	public function __construct($fieldNames, $clientIp, $url, $secret) {
+	public function __construct($clientIp, $url, $secret, $fieldNames, $algo='sha256') {
 		$this->fields = $fieldNames;
 		$this->ip = strval($clientIp);
 		$this->url = $url;
 		$this->secret = $secret;
+		$this->algo = $algo;
 	}
 	
 	private function encodeFieldNames($spinner) {
 		$fieldsEncoded = array_flip($this->fields);
 		foreach ($this->fields as $field) {
-			$fieldsEncoded[$field] = md5($field . $spinner . $this->secret . $this->ip);
+			$fieldsEncoded[$field] = hash($this->algo, $field . $spinner . $this->secret . $this->ip);
 		}
 		return $fieldsEncoded;
 	}
@@ -24,16 +26,19 @@ class Flitter {
 		return $fieldsDecoded;
 	}
 	private function makeSpinner($timestamp) {
-		return md5($timestamp. $this->ip . $this->url . $this->secret);
+		return hash($this->algo, $timestamp. $this->ip . $this->url . $this->secret);
 	}
 	
 	private function fakeFields($fieldCount) {
 		$seed = microtime() + rand(1,999);
 		$fakeFields = array();
 		for ($i = 0; $i < $fieldCount; $i++) {
-			$fakeFields[] = md5($seed + $i);
+			$fakeFields[] = hash($this->algo, $seed + $i);
 		}
 		return $fakeFields;
+	}
+	private function fakeCss($fakeFields, $prefix='.css_') {
+		return $prefix . implode(", $prefix", $fakeFields) . ' { display: none; }';
 	}
 	
 	public function makeFormParts($fakes=0) {
@@ -48,11 +53,13 @@ class Flitter {
 		);
 		if ($fakes) {
 			$parts['fakeFields'] = $this->fakeFields($fakes);
+			$parts['fakeStyles'] = $this->fakeCss($parts['fakeFields']);
 		}
 		
 		return $parts;
 	}
-	public function decodeSubmission($postedData, $spinnerField="token", $timestampField="timestamp") {
+	
+	public function decodeSubmission($postedData, $timestampField='timestamp', $spinnerField='token') {
 		$spinner = $postedData[$spinnerField];
 		$decodedFields = $this->decodeFieldNames($spinner);
 		
