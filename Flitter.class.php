@@ -11,6 +11,9 @@ class Flitter {
 		$fieldsDecoded = array_flip(self::encodeFieldNames($fieldNames, $clientIp, $secret, $spinner));
 		return $fieldsDecoded;
 	}
+	public static function makeSpinner($clientIp, $url, $timestamp, $secret) {
+		return md5($clientIp.$url.$timestamp.$secret);
+	}
 	
 	public static function fakeFields($fieldCount) {
 		$seed = microtime() + rand(1,999);
@@ -21,10 +24,10 @@ class Flitter {
 		return $fakeFields;
 	}
 	
-	public static function makeFormParts($fieldNames, $clientIp, $url, $secret) {
+	public static function makeFormParts($fieldNames, $clientIp, $secret, $url) {
 		$clientIp = strval($clientIp);
 		$timestamp = microtime();
-		$spinner = md5($clientIp.$timestamp.$secret);
+		$spinner = self::makeSpinner($clientIp, $url, $timestamp, $secret);
 		$realFields = self::encodeFieldNames($fieldNames, $clientIp, $secret, $spinner);
 		
 		$parts = array(
@@ -35,7 +38,7 @@ class Flitter {
 		
 		return $parts;
 	}
-	public static function decodeSubmission($fieldNames, $clientIp, $url, $secret, $postedData, $spinnerField="token", $timestampField="timestamp") {
+	public static function decodeSubmission($fieldNames, $clientIp, $secret, $url, $postedData, $spinnerField="token", $timestampField="timestamp") {
 		$clientIp = strval($clientIp);
 		$spinner = $postedData[$spinnerField];
 		$decodedFields = self::decodeFieldNames($fieldNames, $clientIp, $secret, $spinner);
@@ -55,7 +58,7 @@ class Flitter {
 		}
 		
 		if (isset($parts['valid'][$timestampField])) {
-			$spinnerTest = md5($clientIp.$parts['valid'][$timestampField].$secret);
+			$spinnerTest = self::makeSpinner($clientIp, $url, $parts['valid'][$timestampField], $secret);
 			if ($spinnerTest !== $spinner) {
 				$parts['invalid'][$spinnerField] = '1';
 			}
