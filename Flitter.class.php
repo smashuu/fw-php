@@ -6,7 +6,7 @@ class Flitter {
 	private $secret;
 	private $algo;
 	
-	public function __construct($clientIp, $url, $secret, $fieldNames, $algo='sha256') {
+	public function __construct($clientIp, $url, $secret, $fieldNames, $algo='md5') {
 		$this->fields = $fieldNames;
 		$this->ip = strval($clientIp);
 		$this->url = $url;
