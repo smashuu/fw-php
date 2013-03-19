@@ -24,7 +24,7 @@ class Flitter {
 		return $fakeFields;
 	}
 	
-	public static function makeFormParts($fieldNames, $clientIp, $secret, $url) {
+	public static function makeFormParts($fieldNames, $clientIp, $secret, $url, $fakes=0) {
 		$clientIp = strval($clientIp);
 		$timestamp = microtime();
 		$spinner = self::makeSpinner($clientIp, $url, $timestamp, $secret);
@@ -35,6 +35,9 @@ class Flitter {
 			'token'=>$spinner,
 			'fields'=>$realFields
 		);
+		if ($fakes) {
+			$parts['fakeFields'] = self::fakeFields($fakes);
+		}
 		
 		return $parts;
 	}
