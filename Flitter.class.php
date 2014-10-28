@@ -1,17 +1,19 @@
 <?php
+// Based on http://nedbatchelder.com/text/stopbots.html
+
 class Flitter {
 	private $fields;
 	private $ip;
-	private $url;
 	private $secret;
 	private $algo;
+	private $ignore;
 	
-	public function __construct($clientIp, $url, $secret, $fieldNames, $algo='md5') {
+	public function __construct($clientIp, $secret, $fieldNames, $ignoreFields=array(), $algo='md5') {
 		$this->fields = $fieldNames;
 		$this->ip = strval($clientIp);
-		$this->url = $url;
 		$this->secret = $secret;
 		$this->algo = $algo;
+		$this->ignore = $ignoreFields;
 	}
 	
 	private function encodeFieldNames($spinner) {
@@ -26,11 +28,13 @@ class Flitter {
 		return $fieldsDecoded;
 	}
 	private function makeSpinner($timestamp) {
-		return hash($this->algo, $timestamp. $this->ip . $this->url . $this->secret);
+		$timestamp = strval($timestamp);
+		$spinner = hash($this->algo, $timestamp. $this->ip . $this->secret);
+		return $spinner;
 	}
 	
 	private function fakeFields($fieldCount) {
-		$seed = microtime() + rand(1,999);
+		$seed = strval(microtime(true) + rand(1,999));
 		$fakeFields = array();
 		for ($i = 0; $i < $fieldCount; $i++) {
 			$fakeFields[] = hash($this->algo, $seed + $i);
@@ -42,7 +46,7 @@ class Flitter {
 	}
 	
 	public function makeFormParts($fakes=0) {
-		$timestamp = microtime();
+		$timestamp = strval(microtime(true));
 		$spinner = $this->makeSpinner($timestamp);
 		$realFields = $this->encodeFieldNames($spinner);
 		
@@ -60,17 +64,19 @@ class Flitter {
 	}
 	
 	public function decodeSubmission($postedData, $timestampField='timestamp', $spinnerField='token') {
-		$spinner = $postedData[$spinnerField];
-		$decodedFields = $this->decodeFieldNames($spinner);
+		$decodedFields = $this->decodeFieldNames($postedData[$spinnerField]);
 		
 		$parts = array(
 			'valid'=>array(),
-			'invalid'=>array()
+			'invalid'=>array(),
+			'token'=>$postedData[$spinnerField]
 		);
 		foreach ($postedData as $field=>$value) {
 			if ($field !== $spinnerField && !empty($value)) {
 				if (isset($decodedFields[$field])) {
 					$parts['valid'][$decodedFields[$field]] = $value;
+				} elseif (in_array($field, $this->ignore, TRUE)) {
+					$parts['valid'][$field] = $value;
 				} else {
 					$parts['invalid'][$field] = $value;
 				}
@@ -79,8 +85,8 @@ class Flitter {
 		
 		if (isset($parts['valid'][$timestampField])) {
 			$spinnerTest = $this->makeSpinner($parts['valid'][$timestampField]);
-			if ($spinnerTest !== $spinner) {
-				$parts['invalid'][$spinnerField] = '1';
+			if ($spinnerTest !== $postedData[$spinnerField]) {
+				$parts['invalid'][$spinnerField] = $spinnerTest;
 			}
 		} else {
 			$parts['invalid'][$timestampField] = '1';
