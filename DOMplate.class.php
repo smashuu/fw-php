@@ -4,7 +4,7 @@ class DOMplate {
 	public $xpath;
 	
 	public function __construct($domOrPath) {
-		if ($domOrHTML instanceof DOMDocument) {
+		if ($domOrPath instanceof DOMDocument) {
 			$this->dom = $domOrPath;
 		} else {
 			$this->dom = new DOMDocument();
@@ -18,7 +18,15 @@ class DOMplate {
 	}
 	
 	public function fetchElement($queryOrNode) {
-		$element = ($queryOrNode instanceof DOMNode) ? $queryOrNode : $this->xpath->query($queryOrNode)->item(0);
+		if ($queryOrNode instanceof DOMNode) {
+			$element = $queryOrNode;
+		} else { 
+			$queryResult = $this->xpath->query($queryOrNode);
+			if ($queryResult === false) {
+				throw new Exception('XPath expression invalid');
+			}
+			$element = $queryResult->item(0);
+		}
 		if ($element === null) {
 			throw new Exception('Element not found in DOM');
 		}
@@ -41,7 +49,7 @@ class DOMplate {
 		$subElement = $subDom->fetchElement($queryOrNode);
 
 		$copiedNode = $this->dom->importNode($subElement, true);
-		$mainElement->parentNode->appendChild($copiedNode, $mainElement);
+		$mainElement->parentNode->appendChild($copiedNode);
 	}
 	public function repeat($queryOrNode, $times, $seperator=false) {
 		$mainElement = $this->fetchElement($queryOrNode);
@@ -74,9 +82,20 @@ class DOMplate {
 			$mainElement->removeChild($mainElement->firstChild); 
 		} 
 	}
-	public function removeSiblings($queryOrNode) {
-		$mainElement = $this->fetchElement($queryOrNode);
-		$this->removeChildren($element);
+	
+	public function randomSibling($queryOrNode, $returnParent=false) {
+		if ($returnParent) {
+			$mainElement = $this->fetchElement($queryOrNode)->parentNode->cloneNode();
+		}
+		$queryResult = $this->xpath->query($queryOrNode);
+		$length = $queryResult->length;
+		$rando = mt_rand(1, $length);
+		$pickedChild = $queryResult->item($rando - 1);
+		if ($returnParent) {
+			$mainElement->appendChild($pickedChild);
+			return $mainElement;
+		}
+		return $pickedChild;
 	}
 	
 	public function setText($queryOrNode, $newText) {
